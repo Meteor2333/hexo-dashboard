@@ -55,7 +55,7 @@
           label="Title"
           width="380"
         >
-          <template #default="{row}">
+          <template #default="{ row }">
             <router-link :to="row.to">
               <el-text type="primary">
                 {{ row.title }}
@@ -78,7 +78,7 @@
           label="CreateTime"
         />
         <el-table-column label="Status">
-          <template #default="{row}">
+          <template #default="{ row }">
             <el-text
               v-if="row.isDraft"
               type="warning"
@@ -99,7 +99,7 @@
           label="Operations"
           width="190"
         >
-          <template #default="{row}">
+          <template #default="{ row }">
             <el-button
               v-if="row.isDraft && api.publish"
               type="success"
@@ -252,10 +252,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
-  .el-header {height: auto; padding: 10px; border-bottom: 1px solid var(--el-border-color);}
-  .el-form-item {margin-bottom: 0;}
-  .el-table {height: 100%;}
-  .el-table .el-button {width: 80px;}
-  .page-footer {text-align: right;}
+  .el-header { height: auto; padding: 10px; border-bottom: 1px solid var(--el-border-color); }
+  .el-form-item { margin-bottom: 0; }
+  .el-table { height: 100%; }
+  .el-table .el-button { width: 80px; }
+  .page-footer { text-align: right; }
 </style>
 

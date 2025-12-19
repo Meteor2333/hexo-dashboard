@@ -55,11 +55,11 @@ async function handelLogin() {
 </script>
 
 <style scoped>
-    .el-form {margin: 15% auto 0; width: 200px;}
-    .el-button{width: 100%;}
+    .el-form { margin: 15% auto 0; width: 200px; }
+    .el-button { width: 100%; }
 </style>
 
 <style>
-    html, body {padding: 0; margin: 0; height: 100%; background-color: var(--el-bg-color-page)}
+    html, body { padding: 0; margin: 0; height: 100%; background-color: var(--el-bg-color-page); }
 </style>
 

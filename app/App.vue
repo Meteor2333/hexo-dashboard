@@ -66,17 +66,17 @@ const menus = {
 </script>
 
 <style>
-* {box-sizing: border-box;}
-html, body, #app, .page, .page-body{width: 100%; height: 100%; margin: 0; padding: 0;}
-.page > .page-body {overflow: hidden;}
-.page-footer {padding: 10px 20px; height: auto;}
-.flex-grow {flex-grow: 1; }
-a{text-decoration: none;}
-.el-main { --el-main-padding: 0;}
+* { box-sizing: border-box; }
+html, body, #app, .page, .page-body{ width: 100%; height: 100%; margin: 0; padding: 0; }
+.page > .page-body { overflow: hidden; }
+.page-footer { padding: 10px 20px; height: auto; }
+.flex-grow { flex-grow: 1; }
+a{ text-decoration: none; }
+.el-main { --el-main-padding: 0; }
 </style>
 
 <style scoped>
-  .el-header {border-bottom: solid 1px var(--el-menu-border-color);}
+  .el-header { border-bottom: solid 1px var(--el-menu-border-color); }
   .el-menu { border-bottom: 0; }
-  .el-main {height: 100%;}
+  .el-main { height: 100%; }
 </style>

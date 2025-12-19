@@ -67,6 +67,6 @@ async function handleSave() {
 }
 </script>
 <style scoped>
-  .page-footer {text-align: right;}
-  .v-codemirror :deep(.cm-editor) {min-height: 100%;}
+  .page-footer { text-align: right; }
+  .v-codemirror :deep(.cm-editor) { min-height: 100%; }
 </style>
