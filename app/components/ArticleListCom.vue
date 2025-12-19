@@ -184,8 +184,8 @@ const tableData = computed(() =>
         "date": dateFormat(new Date(p.date), "yyyy-mm-dd hh:MM:ss"),
         "isDraft": p.isDraft,
         "to": props.articleType === "post" ?
-            {"name":"PostDetail", "params":{"postId": p._id}}:
-            {"name":"PageDetail", "params":{"pageId": p._id}},
+            {"name": "PostDetail", "params": {"postId": p._id}}:
+            {"name": "PageDetail", "params": {"pageId": p._id}},
 
     })),
 );

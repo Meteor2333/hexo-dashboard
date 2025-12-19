@@ -7,7 +7,7 @@
 
 <script setup>
 import {useRoute} from "vue-router";
-import articleDetail from "../components/ArticleEditorCom.vue";
-import pageApi from "../service/page";
+import articleDetail from "@/components/ArticleEditorCom.vue";
+import pageApi from "@/service/page";
 const route = useRoute();
 </script>

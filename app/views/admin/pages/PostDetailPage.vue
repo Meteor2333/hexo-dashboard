@@ -7,7 +7,7 @@
 
 <script setup>
 import {useRoute} from "vue-router";
-import articleDetail from "../components/ArticleEditorCom.vue";
-import postApi from "../service/post";
+import articleDetail from "@/components/ArticleEditorCom.vue";
+import postApi from "@/service/post";
 const route = useRoute();
 </script>

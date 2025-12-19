@@ -1,18 +1,17 @@
 import {createApp} from "vue";
 import ElementPlus from "element-plus";
-import zhCn from "element-plus/dist/locale/zh-cn.mjs";
+import zhCn from "element-plus/es/locale/lang/zh-cn";
 import "element-plus/dist/index.css";
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
-
-import {basicSetup, EditorView} from "codemirror";
-import VueCodemirror from "vue-codemirror";
-
-
 import App from "./App.vue";
 import router from "./router";
 
+import VueCodemirror from "vue-codemirror";
+import {basicSetup, EditorView} from "codemirror";
+import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+
 const app = createApp(App);
-app.use(ElementPlus, {"size": "small", "zIndex": 3000, "locale": zhCn});
+
+app.use(ElementPlus, {"locale": zhCn});
 app.use(router);
 
 app.use(VueCodemirror, {
@@ -23,7 +22,8 @@ app.use(VueCodemirror, {
     "extensions": [basicSetup, EditorView.lineWrapping],
 });
 
-app.mount("body");
+app.mount("#app");
+
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component);
 }

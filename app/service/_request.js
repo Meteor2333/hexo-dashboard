@@ -1,5 +1,6 @@
 import {ElMessage} from "element-plus";
 import axios from "axios";
+import router from "@/router";
 
 axios.defaults.headers["Content-Type"] = "application/json";
 const service = axios.create({"baseURL": "./api", "timeout": 100000});
@@ -12,15 +13,15 @@ service.interceptors.response.use(
         ) {
             return res.data;
         }
-        const code = res.data.code ;
+        const code = res.data.code;
         if (!code) return res.data;
 
-        const msg = res.data.data || res.data.msg || `系统未知错误: ${code}`;
+        const msg = res.data.data || res.data.msg || `Error: ${code}`;
 
         ElMessage.error(msg);
 
         if (code === 401) {
-            location.href = "./login.html";
+            router.replace({"path": "/login"});
             throw new Error("Illegal login");
         }
         return res.data;

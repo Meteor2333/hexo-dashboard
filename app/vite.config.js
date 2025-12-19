@@ -18,10 +18,7 @@ export default defineConfig({
     "build": {
         "outDir": "../dist",
         "rollupOptions": {
-            "input": {
-                "main": resolve(__dirname, "./index.html"),
-                "login": resolve(__dirname, "./login.html"),
-            },
+            "input": resolve(__dirname, "./index.html"),
         },
     },
 

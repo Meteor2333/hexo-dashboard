@@ -7,16 +7,16 @@ A hexo dashboard plugin, for live hexo server.
 Node.js >= 12.0.0 required.
 
 ```bash
-    # install hexo-admin-plus
-    npm i hexo-admin-plus --save
+# install hexo-admin-plus
+npm i hexo-admin-plus --save
 
-    # start server with global hexo-cli
-    hexo server
+# start server with global hexo-cli
+hexo server
 
-    # or with pm2 as deamon
-    pm2 start node_modules/.bin/hexo -- server
+# or with pm2 as deamon
+pm2 start node_modules/.bin/hexo -- server
 
-    # visit localhost:4000/admin
+# visit localhost:4000/admin
 
 ```
 

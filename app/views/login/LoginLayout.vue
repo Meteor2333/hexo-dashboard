@@ -37,6 +37,8 @@
 <script setup>
 import {ref, reactive} from "vue";
 import accountApi from "@/service/account";
+import router from "@/router";
+
 const loginFormEl = ref(null);
 const loginForm = reactive({});
 
@@ -48,7 +50,7 @@ async function handelLogin() {
     }
     const {code} = await accountApi.login(loginForm);
     if (!code) {
-        location.href = "./index.html";
+        router.replace({"path": "/"});
     }
 }
 

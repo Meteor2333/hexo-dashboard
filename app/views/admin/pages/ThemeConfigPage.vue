@@ -8,8 +8,8 @@
 <script setup>
 import {ref, onMounted} from "vue";
 import {ElMessage} from "element-plus";
-import ConfigEditor from "../components/ConfigEditorCom.vue";
-import configApi from "../service/config";
+import ConfigEditor from "@/components/ConfigEditorCom.vue";
+import configApi from "@/service/config";
 
 const configData = ref("");
 async function handleSave() {
