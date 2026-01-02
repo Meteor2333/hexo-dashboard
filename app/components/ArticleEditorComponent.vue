@@ -23,6 +23,7 @@ import { ref, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 
 import vMdEditor from "@kangc/v-md-editor/lib/codemirror-editor";
+import enUS from "@kangc/v-md-editor/lib/lang/en-US";
 import "@kangc/v-md-editor/lib/style/codemirror-editor.css";
 
 import githubTheme from "@kangc/v-md-editor/lib/theme/github.js";
@@ -60,6 +61,7 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material-darker.css";
 
 vMdEditor.Codemirror = Codemirror;
+vMdEditor.lang.use("en-US", enUS);
 vMdEditor.use(githubTheme, {
     "Hljs": hljs,
 });
