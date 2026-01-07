@@ -105,7 +105,7 @@
           sortable
           prop="title"
           label="Title"
-          width="420"
+          width="400"
         >
           <template #default="{ row }">
             <router-link :to="row.to">
@@ -130,6 +130,11 @@
         <el-table-column
           prop="date"
           label="CreateTime"
+          sortable
+        />
+        <el-table-column
+          prop="updated"
+          label="UpdateTime"
           sortable
         />
         <el-table-column label="Status">
@@ -239,8 +244,8 @@ const tableData = computed(() =>
         "link": p.link,
         "categories": p.categories?.join(", ") || "-",
         "tags": p.tags?.join(", ") || "-",
-        "updated": dateFormat(new Date(p.updated), "yyyy-mm-dd hh:MM:ss"),
-        "date": dateFormat(new Date(p.date), "yyyy-mm-dd hh:MM:ss"),
+        "updated": dateFormat(new Date(p.updated), "yyyy-mm-dd HH:MM:ss"),
+        "date": dateFormat(new Date(p.date), "yyyy-mm-dd HH:MM:ss"),
         "isDraft": p.isDraft,
         "to": props.articleType === "post" ?
             { "name": "EditPost", "params": { "postId": p._id } }:

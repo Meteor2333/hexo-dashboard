@@ -38,7 +38,7 @@ module.exports = function (hexo) {
             "page": new ArticleService(hexo, "Page"),
             "category": new TaxonomyService(hexo, "Category"),
             "tag": new TaxonomyService(hexo, "Tag"),
-            "config": new ConfigService(hexo)
+            "config": new ConfigService(hexo),
         };
     });
 

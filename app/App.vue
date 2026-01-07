@@ -58,7 +58,7 @@
           ref="formRef"
           label-width="auto"
           :model="loginForm"
-          @keydown.enter="handelLogin"
+          @keydown.enter="handleLogin"
         >
           <el-form-item
             required
@@ -88,7 +88,7 @@
         <template #footer>
           <el-button
             type="primary"
-            @click="handelLogin"
+            @click="handleLogin"
           >
             Confirm
           </el-button>
@@ -118,7 +118,7 @@ const loginForm = reactive({
     "password": "",
 });
 
-async function handelLogin() {
+async function handleLogin() {
     try {
         await formRef.value.validate();
     } catch (e) {

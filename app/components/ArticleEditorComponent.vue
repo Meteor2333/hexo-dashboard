@@ -1,10 +1,81 @@
 <template>
   <el-container
     class="page"
-    @keydown.ctrl.s.prevent.stop="handleSave"
-    @keydown.meta.s.prevent.stop="handleSave"
+    @keydown.ctrl.s.prevent.stop="saveDialogVisible = true"
+    @keydown.meta.s.prevent.stop="saveDialogVisible = true"
   >
     <el-main class="page-body">
+      <el-dialog
+        v-model="advancedDialogVisible"
+        title="Advanced Mode"
+        align-center
+      >
+        <VueCodemirror
+          v-model:value="meta"
+          :options="{
+            lineNumbers: true,
+            mode: 'yaml',
+            theme: 'material-darker',
+            lineWrapping: true,
+            tabSize: 2,
+            indentUnit: 2,
+            autofocus: true,
+            scrollbarStyle: 'overlay'
+          }"
+        />
+        <template #footer>
+          <el-button
+            type="primary"
+            @click="handleParse"
+          >
+            Confirm
+          </el-button>
+        </template>
+      </el-dialog>
+      <el-dialog
+        v-model="saveDialogVisible"
+        title="Save"
+        width="25%"
+        align-center
+      >
+        <el-form
+          ref="formRef"
+          label-width="auto"
+          :model="metaForm"
+        >
+          <el-form-item
+            required
+            label="Title"
+            prop="title"
+          >
+            <el-input v-model="metaForm.title" />
+          </el-form-item>
+          <el-form-item
+            label="Categories"
+            prop="categories"
+          >
+            <el-input-tag v-model="metaForm.categories" />
+          </el-form-item>
+          <el-form-item
+            label="Tags"
+            prop="tags"
+          >
+            <el-input-tag v-model="metaForm.tags" />
+          </el-form-item>
+          <el-form-item>
+            <el-button @click="handleStringify">
+              Advanced
+            </el-button>
+            <el-button
+              class="kepp-right"
+              type="primary"
+              @click="handleSave"
+            >
+              Submit
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
       <v-md-editor
         v-model="content"
         height="100%"
@@ -12,22 +83,24 @@
         :include-level="[1, 2, 3, 4]"
         :codemirror-config="{ theme: 'material-darker' }"
         @upload-image="handleUploadImage"
-        @save="handleSave"
+        @save="saveDialogVisible = true"
       />
     </el-main>
   </el-container>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { ElMessage } from "element-plus";
+import YAML from "js-yaml";
 
+import VueCodemirror from "codemirror-editor-vue3";
 import vMdEditor from "@kangc/v-md-editor/lib/codemirror-editor";
-import enUS from "@kangc/v-md-editor/lib/lang/en-US";
-import "@kangc/v-md-editor/lib/style/codemirror-editor.css";
 
-import githubTheme from "@kangc/v-md-editor/lib/theme/github.js";
+import "@kangc/v-md-editor/lib/style/codemirror-editor.css";
 import "@kangc/v-md-editor/lib/theme/style/github.css";
+import githubTheme from "@kangc/v-md-editor/lib/theme/github.js";
+import enUS from "@kangc/v-md-editor/lib/lang/en-US";
 
 // highlightjs
 import hljs from "highlight.js";
@@ -66,9 +139,14 @@ vMdEditor.use(githubTheme, {
     "Hljs": hljs,
 });
 
-const emit = defineEmits(["save"]);
+const emit = defineEmits(["create"]);
 const props = defineProps(["articleId", "articleApi"]);
 const api = props.articleApi;
+
+const formRef = ref(null);
+const metaForm = reactive({});
+const saveDialogVisible = ref(false);
+const advancedDialogVisible = ref(false);
 
 const meta = ref("");
 const content = ref("");
@@ -76,26 +154,50 @@ onMounted(async () => {
     if (props.articleId) {
         const { data } = await api.raw(props.articleId);
         meta.value = data.meta;
+        Object.assign(metaForm, YAML.load(meta.value) || {});
         content.value = data.content;
     } else {
-        meta.value = "title: \"untitled\"\ncategories: \"uncategorized\"\ntags:\n  - \"tag1\"\n  - \"tag2\"\n  - \"tag3\"\n";
+        metaForm.title = "";
+        metaForm.categories = [];
+        metaForm.tags = [];
         content.value = "# Hello World\n\n**This is your article. Edit it as you like!**\n";
     }
 });
 
+function handleStringify() {
+    advancedDialogVisible.value = true;
+    meta.value = YAML.dump(metaForm);
+}
+
+function handleParse() {
+    advancedDialogVisible.value = false;
+    const form = YAML.load(meta.value) || {};
+    Object.keys(metaForm).forEach(key => delete metaForm[key]);
+    Object.assign(metaForm, form);
+}
+
 async function handleSave() {
+    try {
+        await formRef.value.validate();
+    } catch (e) {
+        return;
+    }
+
     ElMessage.primary("Saving...");
+    if (!meta.value) meta.value = YAML.dump(metaForm);
     const info = { "meta": meta.value, "content": content.value };
     if (props.articleId) {
         const { code } = await api.update(props.articleId, info);
         if (!code) {
+            saveDialogVisible.value = false;
             ElMessage.success("Updated successfully!");
         }
     } else {
         const { code, data } = await api.create(info);
         if (!code) {
+            saveDialogVisible.value = false;
             ElMessage.success("Created successfully!");
-            emit("save", data);
+            emit("create", data);
         }
     }
 }
@@ -112,7 +214,11 @@ async function handleUploadImage(_event, insertImage, files) {
 
 <style scoped>
   .page-footer { text-align: right; }
-  :deep(.v-md-editor) { background-color: var(--el-bg-color); }
+  .kepp-right { margin-left: auto; }
+  .codemirror-container { height: 300px !important; }
+  .space { display: flex; align-items: center; gap: 0px 8px; width: 100%; }
+
+  .v-md-editor { background-color: var(--el-bg-color); }
   .v-md-editor :deep(.v-md-editor__toolbar) { background-color: var(--el-bg-color-overlay); }
   .v-md-editor :deep(.v-md-editor__main) { background-color: #212121; }
   .v-md-editor :deep(.v-md-editor__editor-wrapper) { border-right-color: var(--el-border-color); }

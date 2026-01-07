@@ -1,7 +1,7 @@
 <template>
   <article-editor
     :article-api="postApi"
-    @save="handleSave"
+    @create="handleCreate"
   />
 </template>
 
@@ -10,7 +10,7 @@ import articleEditor from "@/components/ArticleEditorComponent.vue";
 import postApi from "@/service/post";
 import router from "@/router";
 
-function handleSave(data) {
+function handleCreate(data) {
     router.replace({ "name":"EditPost", "params":{ "postId": data._id } });
 }
 </script>

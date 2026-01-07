@@ -63,4 +63,5 @@ async function handleSave() {
 
 <style scoped>
   .page-footer { text-align: right; }
+  :deep(.CodeMirror) { background-color: #2a2a2a !important; }
 </style>
