@@ -1,4 +1,4 @@
-# hexo-admin-plus
+# hexo-dashboard
 
 A hexo dashboard plugin, for live hexo server.
 
@@ -7,8 +7,8 @@ A hexo dashboard plugin, for live hexo server.
 Node.js >= 12.0.0 required.
 
 ```bash
-# install hexo-admin-plus
-npm i hexo-admin-plus --save
+# install hexo-dashboard
+npm i hexo-dashboard --save
 
 # start server with global hexo-cli
 hexo server
@@ -16,7 +16,7 @@ hexo server
 # or with pm2 as deamon
 pm2 start node_modules/.bin/hexo -- server
 
-# visit localhost:4000/admin
+# visit localhost:4000/dashboard
 
 ```
 
@@ -26,7 +26,7 @@ pm2 start node_modules/.bin/hexo -- server
 you can add a few config variables to your hexo `_config.yml`:
 
 ```
-admin:
+dashboard:
   username: myfavoritename
   password_hash: be121740bf988b2225a313fa1f107ca1
   secret: a secret something
@@ -43,5 +43,5 @@ have it be long and complicated.
 [hexo-myadmin](https://github.com/xjpin/hexo-myadmin)
 
 ### Contribute
-- let me know how it can be improved in the [github issues](https://github.com/Meteor2333/hexo-admin-plus/issues)
-- [fork](https://github.com/Meteor2333/hexo-admin-plus) and pull-request
+- let me know how it can be improved in the [github issues](https://github.com/Meteor2333/hexo-dashboard/issues)
+- [fork](https://github.com/Meteor2333/hexo-dashboard) and pull-request
