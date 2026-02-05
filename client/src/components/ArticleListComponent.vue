@@ -142,19 +142,13 @@
         @current-change="loadArticles"
       />
     </div>
-
-    <!-- Empty State -->
-    <div v-if="!loading && articles.length === 0" class="hd-empty">
-      <el-icon class="hd-empty-icon"><Document /></el-icon>
-      <p>{{ t('common.noData') }}</p>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Plus, Search, Document } from '@element-plus/icons-vue';
+import { Plus, Search } from '@element-plus/icons-vue';
 import { useI18n } from '@/i18n';
 import type { Article, ArticleList, TaxonomyList } from '@/../types/api';
 
