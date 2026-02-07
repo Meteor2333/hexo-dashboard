@@ -18,7 +18,7 @@
   },
   "main": "./server/dist/index.js",
   "bin": {
-    "hexo-dashboard": "./bin/hexo-dashboard.js"
+    "hexo-dashboard": "./bin/hexo-dashboard"
   },
   "scripts": {
     "build": "pnpm run client:build && pnpm run server:build",

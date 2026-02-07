@@ -1,0 +1,240 @@
+#!/usr/bin/env node
+
+const { join, resolve } = require('path');
+const { readFileSync, writeFileSync, existsSync } = require('fs');
+const { hashSync } = require('bcryptjs');
+
+const args = process.argv.slice(2);
+const command = args[0];
+
+// Show help message
+const showHelp = () => {
+  console.log(`
+hexo-dashboard - User management CLI
+
+Usage:
+  hexo-dashboard <command> [options]
+
+Commands:
+  register <username> <password>   Add a new user (alias: reg)
+  passwd <username> <password>     Change user password
+  delete <username>                Delete a user (alias: del, rm, remove)
+  list                             List all users (alias: ls)
+  help                             Show this help message
+
+Examples:
+  hexo-dashboard register admin mypassword123
+  hexo-dashboard passwd admin newpassword456
+  hexo-dashboard delete admin
+  hexo-dashboard list
+`);
+};
+
+// Validate command
+const validCommands = ['register', 'reg', 'passwd', 'delete', 'del', 'rm', 'remove', 'list', 'ls', 'help', '-h', '--help'];
+if (!command || !validCommands.includes(command)) {
+  showHelp();
+  process.exit(command ? 1 : 0);
+}
+
+if (command === 'help' || command === '-h' || command === '--help') {
+  showHelp();
+  process.exit(0);
+}
+
+// Find hexo directory - look for _config.yml
+const findHexoDir = () => {
+  let currentDir = process.cwd();
+  const maxDepth = 5;
+  let depth = 0;
+
+  while (depth < maxDepth) {
+    const configPath = join(currentDir, '_config.yml');
+    if (existsSync(configPath)) {
+      return currentDir;
+    }
+    const parentDir = resolve(currentDir, '..');
+    if (parentDir === currentDir) {
+      break;
+    }
+    currentDir = parentDir;
+    depth++;
+  }
+
+  return process.cwd();
+};
+
+const hexoDir = findHexoDir();
+const configPath = join(hexoDir, '_config.yml');
+
+if (!existsSync(configPath)) {
+  console.error(`Error: _config.yml not found at ${configPath}`);
+  console.error('Please run this command in your hexo project directory or a subdirectory');
+  process.exit(1);
+}
+
+// Patterns for matching dashboard section
+const commentedDashboardPattern = /^(# (?:Dashboard|Hexo-dashboard)[^\n]*\n)?dashboard:\s*\n((?:  [^\n]+\n)*)/m;
+const plainDashboardPattern = /^dashboard:\s*\n((?:  [^\n]+\n)*)/m;
+
+// Read config file
+let configContent = readFileSync(configPath, 'utf-8');
+
+// Parse existing users from dashboard section
+const parseUsers = () => {
+  const match = configContent.match(commentedDashboardPattern) || configContent.match(plainDashboardPattern);
+  if (!match) return {};
+  
+  const usersBlock = match[2] || match[1] || '';
+  const users = {};
+  const lines = usersBlock.split('\n');
+  
+  for (const line of lines) {
+    const userMatch = line.match(/^  (\w+): (.+)$/);
+    if (userMatch) {
+      users[userMatch[1]] = userMatch[2];
+    }
+  }
+  
+  return users;
+};
+
+// Write users back to config
+const writeUsers = (users, comment = '# Hexo-dashboard authentication') => {
+  const userEntries = Object.entries(users)
+    .map(([name, hash]) => `  ${name}: ${hash}`)
+    .join('\n');
+  
+  const dashboardBlock = userEntries ? `${comment}\ndashboard:\n${userEntries}\n` : '';
+  
+  // Check if dashboard section exists
+  const match = configContent.match(commentedDashboardPattern) || configContent.match(plainDashboardPattern);
+  
+  if (match) {
+    // Replace existing section
+    const fullMatch = match[0];
+    const matchIndex = configContent.indexOf(fullMatch);
+    const before = configContent.substring(0, matchIndex);
+    const after = configContent.substring(matchIndex + fullMatch.length);
+    
+    if (Object.keys(users).length > 0) {
+      configContent = before + dashboardBlock + after;
+    } else {
+      // Remove the section entirely if no users
+      configContent = before + after;
+    }
+  } else if (Object.keys(users).length > 0) {
+    // Add new section at the end
+    if (configContent.endsWith('\n')) {
+      configContent += '\n' + dashboardBlock;
+    } else {
+      configContent += '\n\n' + dashboardBlock;
+    }
+  }
+  
+  writeFileSync(configPath, configContent, 'utf-8');
+};
+
+try {
+  const users = parseUsers();
+
+  // Handle commands
+  switch (command) {
+    case 'register':
+    case 'reg': {
+      if (args.length < 3) {
+        console.error('Usage: hexo-dashboard register <username> <password>');
+        process.exit(1);
+      }
+      const username = args[1];
+      const password = args[2];
+      
+      if (!username || !password) {
+        console.error('Username and password cannot be empty');
+        process.exit(1);
+      }
+      
+      if (users[username]) {
+        console.error(`Error: User '${username}' already exists. Use 'passwd' to change password.`);
+        process.exit(1);
+      }
+      
+      users[username] = hashSync(password, 10);
+      writeUsers(users);
+      console.log(`✓ User '${username}' registered successfully!`);
+      console.log(`  Config file: ${configPath}`);
+      break;
+    }
+    
+    case 'passwd': {
+      if (args.length < 3) {
+        console.error('Usage: hexo-dashboard passwd <username> <password>');
+        process.exit(1);
+      }
+      const username = args[1];
+      const password = args[2];
+      
+      if (!username || !password) {
+        console.error('Username and password cannot be empty');
+        process.exit(1);
+      }
+      
+      if (!users[username]) {
+        console.error(`Error: User '${username}' not found.`);
+        process.exit(1);
+      }
+      
+      users[username] = hashSync(password, 10);
+      writeUsers(users);
+      console.log(`✓ Password for '${username}' changed successfully!`);
+      console.log(`  Config file: ${configPath}`);
+      break;
+    }
+    
+    case 'delete':
+    case 'del':
+    case 'rm':
+    case 'remove': {
+      if (args.length < 2) {
+        console.error('Usage: hexo-dashboard delete <username>');
+        process.exit(1);
+      }
+      const username = args[1];
+      
+      if (!username) {
+        console.error('Username cannot be empty');
+        process.exit(1);
+      }
+      
+      if (!users[username]) {
+        console.error(`Error: User '${username}' not found.`);
+        process.exit(1);
+      }
+      
+      delete users[username];
+      writeUsers(users);
+      console.log(`✓ User '${username}' deleted successfully!`);
+      console.log(`  Config file: ${configPath}`);
+      break;
+    }
+    
+    case 'list':
+    case 'ls': {
+      const usernames = Object.keys(users);
+      if (usernames.length === 0) {
+        console.log('No users registered.');
+      } else {
+        console.log(`Registered users (${usernames.length}):`);
+        usernames.forEach(name => console.log(`  - ${name}`));
+      }
+      break;
+    }
+  }
+} catch (error) {
+  if (error instanceof Error) {
+    console.error(`Error: ${error.message}`);
+  } else {
+    console.error('An unknown error occurred');
+  }
+  process.exit(1);
+}
