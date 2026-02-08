@@ -10,6 +10,7 @@ export default class AuthService {
 
   authenticate(username: string, password: string): boolean {
     const target = this.hexo.config.dashboard[username];
+    if (!target) return false;
     return compareSync(password, target);
   }
 };
