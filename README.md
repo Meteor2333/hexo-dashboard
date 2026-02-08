@@ -23,7 +23,7 @@ A Vue-based dashboard for managing your [Hexo](https://hexo.io/) blog. Edit post
 
 ## Installation | 安装
 
-**Requirements | 环境要求:** Node.js >= 20.19.0
+**Requirements | 环境要求:** Node.js >= 14
 
 ```bash
 # Install | 安装
