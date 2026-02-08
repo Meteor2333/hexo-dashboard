@@ -1,6 +1,6 @@
 {
   "name": "hexo-dashboard",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A hexo dashboard plugin, for live blog server.",
   "main": "server/dist/index.js",
   "bin": {
