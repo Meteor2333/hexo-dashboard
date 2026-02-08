@@ -1,8 +1,8 @@
 # Hexo Dashboard
 
-A Vue-based dashboard for managing your Hexo blog. Edit posts, pages, and configurations directly from the browser.
+A Vue-based dashboard for managing your [Hexo](https://hexo.io/) blog. Edit posts, pages, and configurations directly from the browser.
 
-一个基于 Vue 的 Hexo 博客管理面板。在浏览器中直接编辑文章、页面和配置。
+一个基于 Vue 的 [Hexo](https://hexo.io/zh-cn/) 博客管理面板。在浏览器中直接编辑文章、页面和配置。
 
 ## Features | 功能特点
 
