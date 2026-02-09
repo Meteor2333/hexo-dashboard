@@ -52,8 +52,8 @@ Manage dashboard users from the command line.
 
 | Command | Description |
 |---------|-------------|
-| `register <user> <pass>` | Add a new user 添加新用户 |
-| `passwd <user> <pass>` | Change user password 修改用户密码 |
+| `register <user>` | Add a new user 添加新用户 |
+| `passwd <user>` | Change user password 修改用户密码 |
 | `delete <user>` | Delete a user 删除用户 |
 | `list` | List all users 列出所有用户 |
 | `help` | Show help message 显示帮助信息 |
@@ -73,10 +73,12 @@ Manage dashboard users from the command line.
 npx hexo-dashboard help
 
 # Register a new user | 注册新用户
-npx hexo-dashboard register admin mypassword123
+npx hexo-dashboard register admin
+# Password: ******** (hidden)
 
 # Change password | 修改密码
-npx hexo-dashboard passwd admin newpassword456
+npx hexo-dashboard passwd admin
+# Password: ******** (hidden)
 
 # Delete a user | 删除用户
 npx hexo-dashboard delete admin

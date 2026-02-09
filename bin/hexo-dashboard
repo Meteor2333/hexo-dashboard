@@ -3,6 +3,7 @@
 const { join, resolve } = require('path');
 const { readFileSync, writeFileSync, existsSync } = require('fs');
 const { hashSync } = require('bcryptjs');
+const readline = require('readline');
 
 // ============================================================================
 // Help
@@ -16,18 +17,77 @@ Usage:
     hexo-dashboard <command> [options]
 
 Commands:
-    register <username> <password>   Add a new user (alias: reg)
-    passwd <username> <password>     Change user password
+    register <username>   Add a new user (alias: reg)
+    passwd <username>     Change user password
     delete <username>                Delete a user (alias: del, rm, remove)
     list                             List all users (alias: ls)
     help                             Show this help message
 
 Examples:
-    hexo-dashboard register admin mypassword123
-    hexo-dashboard passwd admin newpassword456
+    hexo-dashboard register admin
+    hexo-dashboard passwd admin
     hexo-dashboard delete admin
     hexo-dashboard list
     `);
+};
+
+// ============================================================================
+// Password input
+// ============================================================================
+
+/**
+ * Read password from stdin without echoing
+ */
+const readPassword = (prompt) => {
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+
+        // Disable echo
+        process.stdout.write(prompt);
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+
+        let password = '';
+        const onData = (char) => {
+            const c = char.toString();
+            if (c === '\n' || c === '\r' || c === '\u0004') {
+                // Enter or Ctrl+D
+                process.stdin.setRawMode(false);
+                process.stdin.removeListener('data', onData);
+                rl.close();
+                console.log();
+                resolve(password);
+            } else if (c === '\u0003') {
+                // Ctrl+C
+                process.stdin.setRawMode(false);
+                process.exit(1);
+            } else if (c === '\u007F' || c === '\b') {
+                // Backspace
+                if (password.length > 0) {
+                    password = password.slice(0, -1);
+                }
+            } else {
+                password += c;
+            }
+        };
+
+        process.stdin.on('data', onData);
+    });
+};
+
+/**
+ * Get password - from interactive input
+ */
+const getPassword = async (promptText = 'Password: ') => {
+    const password = await readPassword(promptText);
+    if (!password) {
+        console.error('Error: Password cannot be empty.');
+        process.exit(1);
+    }
+    return password;
 };
 
 // ============================================================================
@@ -112,32 +172,34 @@ const writeUsers = (configPath, content, users) => {
 // ============================================================================
 
 const commands = {
-    register(users, args, configPath, content) {
-        const [username, password] = args;
-        if (!username || !password) {
-            console.error('Usage: hexo-dashboard register <username> <password>');
+    async register(users, args, configPath, content) {
+        const [username] = args;
+        if (!username) {
+            console.error('Usage: hexo-dashboard register <username>');
             process.exit(1);
         }
         if (users[username]) {
             console.error(`Error: User '${username}' already exists. Use 'passwd' to change password.`);
             process.exit(1);
         }
+        const password = await getPassword();
         users[username] = hashSync(password, 12);
         writeUsers(configPath, content, users);
         console.log(`✓ User '${username}' registered successfully!`);
         console.log(`  Config: ${configPath}`);
     },
 
-    passwd(users, args, configPath, content) {
-        const [username, password] = args;
-        if (!username || !password) {
-            console.error('Usage: hexo-dashboard passwd <username> <password>');
+    async passwd(users, args, configPath, content) {
+        const [username] = args;
+        if (!username) {
+            console.error('Usage: hexo-dashboard passwd <username>');
             process.exit(1);
         }
         if (!users[username]) {
             console.error(`Error: User '${username}' not found.`);
             process.exit(1);
         }
+        const password = await getPassword();
         users[username] = hashSync(password, 12);
         writeUsers(configPath, content, users);
         console.log(`✓ Password for '${username}' changed successfully!`);
@@ -182,36 +244,40 @@ commands.ls = commands.list;
 // Main
 // ============================================================================
 
-const args = process.argv.slice(2);
-const command = args[0];
+const main = async () => {
+    const args = process.argv.slice(2);
+    const command = args[0];
 
-// Help
-if (!command || command === 'help' || command === '-h' || command === '--help') {
-    showHelp();
-    process.exit(0);
-}
+    // Help
+    if (!command || command === 'help' || command === '-h' || command === '--help') {
+        showHelp();
+        process.exit(0);
+    }
 
-// Validate command
-if (!commands[command]) {
-    console.error(`Unknown command: ${command}`);
-    showHelp();
-    process.exit(1);
-}
+    // Validate command
+    if (!commands[command]) {
+        console.error(`Unknown command: ${command}`);
+        showHelp();
+        process.exit(1);
+    }
 
-// Find config
-const configPath = findConfigPath();
-if (!configPath) {
-    console.error('Error: _config.yml not found.');
-    console.error('Please run this command in your Hexo project directory.');
-    process.exit(1);
-}
+    // Find config
+    const configPath = findConfigPath();
+    if (!configPath) {
+        console.error('Error: _config.yml not found.');
+        console.error('Please run this command in your Hexo project directory.');
+        process.exit(1);
+    }
 
-// Execute
-try {
-    const content = readFileSync(configPath, 'utf-8');
-    const users = parseUsers(content);
-    commands[command](users, args.slice(1), configPath, content);
-} catch (err) {
-    console.error(`Error: ${err.message}`);
-    process.exit(1);
-}
+    // Execute
+    try {
+        const content = readFileSync(configPath, 'utf-8');
+        const users = parseUsers(content);
+        await commands[command](users, args.slice(1), configPath, content);
+    } catch (err) {
+        console.error(`Error: ${err.message}`);
+        process.exit(1);
+    }
+};
+
+main();
