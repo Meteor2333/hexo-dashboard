@@ -186,14 +186,21 @@ const handleLogin = async () => {
     showLoginDialog.value = false;
     unauthorized.value = false;
     loginForm.value = { username: '', password: '' };
-    ElMessage.success(t('auth.loginSuccess'));
     location.reload();
+    sessionStorage.setItem('loginSuccess', 'true');
   } catch {
     ElMessage.error(t('auth.loginError'));
   } finally {
     loginLoading.value = false;
   }
 };
+
+window.addEventListener('load', () => {
+  if (sessionStorage.getItem('loginSuccess')) {
+    ElMessage.success(t('auth.loginSuccess'));
+    sessionStorage.removeItem('loginSuccess');
+  }
+});
 
 watch(unauthorized, (val) => {
   showLoginDialog.value = val;
