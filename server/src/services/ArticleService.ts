@@ -45,8 +45,7 @@ export default class ArticleService {
     const compiled = parse(['---', meta, '---', content].join('\n'));
     if (!compiled.title) throw new Error('Title cannot be empty!');
 
-    compiled.updated = compiled.updated || new Date();
-    compiled.author = this.hexo.config.author;
+    compiled.date = compiled.updated = new Date();
     compiled.layout = this.type;
 
     const file = await this.hexo.post.create(compiled);
@@ -59,9 +58,8 @@ export default class ArticleService {
     if (!document) throw new Error('The article with ID ' + id + ' could not be found!');
 
     const compiled = parse(['---', meta, '---', content].join('\n'));
-    compiled.updated = compiled.updated || new Date();
-    compiled.date = compiled.date || new Date(document.date.valueOf());
-    compiled.author = compiled.author || document.author || this.hexo.config.author;
+    compiled.updated = new Date();
+    compiled.layout = this.type;
 
     await writeFile(document.full_source, stringify(compiled));
     await this.hexo.source.process();

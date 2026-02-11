@@ -22,7 +22,7 @@ const { t } = useI18n();
 const articleId = computed(() => route.params.id as string);
 const isNew = computed(() => articleId.value === 'new');
 
-const defaultMeta = `title: New Post\ncategories: \ntags: \ndate: ${new Date().toLocaleString()}`;
+const defaultMeta = 'title: New Post\ncategories: \ntags: ';
 
 const api = {
   getData: postApi.getData,
