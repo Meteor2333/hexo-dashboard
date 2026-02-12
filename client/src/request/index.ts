@@ -9,7 +9,8 @@ const service = axios.create({ 'baseURL': `${new URL('api', root).href}`, 'timeo
 service.interceptors.response.use(
   response => {
     if (response.status === 201) {
-      router.push(response.headers['location']);
+      const location = response.headers['location'];
+      if (location) router.push(location);
     }
 
     return response.data;
