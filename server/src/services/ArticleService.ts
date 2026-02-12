@@ -16,7 +16,7 @@ export default class ArticleService {
   ) {
   }
 
-  getArticles(title?: string | undefined, category?: string | undefined, tag?: string | undefined): Query<PostSchema | PageSchema> {
+  getArticles(title?: string | undefined, category?: string | undefined, tag?: string | undefined) {
     return this.model.filter((article: Document<PostSchema | PageSchema>) => {
       if (title && !article.title.toLowerCase().includes(title.toLowerCase())) return false;
       if (category && !(article.categories as Query<CategorySchema>).some(c => c.name === category)) return false;
@@ -25,23 +25,13 @@ export default class ArticleService {
     }).sort('date', -1);
   }
 
-  getData(query: string | object): {
-      data: string;
-      content: string;
-      separator: string;
-      prefixSeparator: boolean;
-    } | {
-      content: string;
-      data?: undefined;
-      separator?: undefined;
-      prefixSeparator?: undefined;
-    } | null {
+  getData(query: string | object) {
     const document = this.findDocument(query);
     if (!document) return null;
     return split(document.raw);
   }
 
-  async create(meta: string, content: string): Promise<Document<PostSchema | PageSchema> | undefined> {
+  async create(meta: string, content: string) {
     const compiled = parse(['---', meta, '---', content].join('\n'));
     if (!compiled.title) throw new Error('Title cannot be empty!');
 
@@ -53,7 +43,7 @@ export default class ArticleService {
     return this.findDocument({ 'source': this.toRelativePath(file.path) });
   }
 
-  async update(id: string, meta: string, content: string): Promise<Document<PostSchema | PageSchema> | undefined> {
+  async update(id: string, meta: string, content: string) {
     const document = this.findDocument(id);
     if (!document) throw new Error('The article with ID ' + id + ' could not be found!');
 
@@ -79,7 +69,7 @@ export default class ArticleService {
     await this.hexo.source.process();
   }
 
-  async publish(id: string): Promise<Document<PostSchema | PageSchema> | undefined> {
+  async publish(id: string) {
     if (this.type !== 'post') return;
 
     const document = this.findDocument(id);
@@ -94,7 +84,7 @@ export default class ArticleService {
     return this.findDocument({ 'source': this.toRelativePath(fullSource) });
   }
 
-  async unpublish(id: string): Promise<Document<PostSchema | PageSchema> | undefined> {
+  async unpublish(id: string) {
     if (this.type !== 'post') return;
 
     const document = this.findDocument(id);
@@ -109,7 +99,7 @@ export default class ArticleService {
     return this.findDocument({ 'source': this.toRelativePath(fullSource) });
   }
 
-  findDocument(query: string | object): Document<PostSchema | PageSchema> | undefined {
+  findDocument(query: string | object) {
     if (typeof (query) === 'string') {
       return this.model.findById(query);
     } else {
@@ -117,7 +107,7 @@ export default class ArticleService {
     }
   }
 
-  toRelativePath(path: string): string {
+  toRelativePath(path: string) {
     return path.slice(this.hexo.source_dir.length).replace(/\\/g, '/');
   }
 };

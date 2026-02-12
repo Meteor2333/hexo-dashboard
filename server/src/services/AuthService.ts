@@ -14,7 +14,7 @@ export default class AuthService {
     }
   }
 
-  authenticate(username: string, password: string): boolean {
+  authenticate(username: string, password: string) {
     const target = this.users[username.toLowerCase()];
     if (!target) return false;
     return compareSync(password, target);
