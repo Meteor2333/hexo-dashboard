@@ -87,16 +87,6 @@ npx hexo-dashboard delete admin
 npx hexo-dashboard list
 ```
 
-### Configuration | 配置说明
-
-After registration, your `_config.yml` will contain:  
-注册后，`_config.yml` 会包含：
-
-```yaml
-dashboard:
-  admin: $2b$12$ABC...xyz    # bcrypt hashed password
-```
-
 ## Troubleshooting | 常见问题
 
 ### "hexo-dashboard" command not found | 命令未找到
@@ -105,7 +95,7 @@ Use `npx` to run the command:
 使用 `npx` 运行命令：
 
 ```bash
-npx hexo-dashboard register admin password
+npx hexo-dashboard ...
 ```
 
 ### "_config.yml" not found | 配置文件未找到
@@ -115,19 +105,8 @@ Make sure you run the command in your Hexo project directory:
 
 ```bash
 cd /path/to/your/hexo
-npx hexo-dashboard register admin password
+npx hexo-dashboard ...
 ```
-
-## Security Notes | 安全提示
-
-- ⚠️ Passwords are hashed with bcrypt (cost factor: 12)  
-  密码使用 bcrypt 加密（成本因子：12）
-
-- ⚠️ Never commit plaintext passwords to version control  
-  不要将明文密码提交到版本控制
-
-- ⚠️ Keep your `_config.yml` secure  
-  妥善保管你的配置文件
 
 ## Credits | 致谢
 
